@@ -74,8 +74,7 @@ import net.minecraft.potion.Potion
 import net.minecraft.util.*
 import org.lwjgl.input.Keyboard
 import java.awt.Color
-import kotlin.math.max
-import kotlin.math.roundToInt
+import kotlin.math.*
 
 object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_R) {
     /**
@@ -339,6 +338,8 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_R) {
     private val duration by float(
         "Duration", 1.5F, 0.5F..3F, suffix = "Seconds"
     ) { animateCircleY || animateHeight }.subjective()
+    
+    private fun getAnimationProgress() = (System.currentTimeMillis() % (duration * 1000L)) / (duration * 1000L)
 
     // Box option
     private val boxOutline by boolean("Outline", true) { mark == "Box" }.subjective()
@@ -639,17 +640,21 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_R) {
                 "none" -> return@handler
                 "platform" -> drawPlatform(target!!, hittableColor)
                 "box" -> drawEntityBox(target!!, hittableColor, boxOutline)
-                "circle" -> drawCircle(
-                    target!!,
-                    duration * 1000F,
-                    heightRange.takeIf { animateHeight } ?: heightRange.endInclusive..heightRange.endInclusive,
-                    extraWidth,
-                    fillInnerCircle,
-                    withHeight,
-                    circleYRange.takeIf { animateCircleY },
-                    circleStartColor.rgb,
-                    circleEndColor.rgb
-                )
+                "circle" -> {
+                    val progress = getAnimationProgress()
+                    
+                    drawCircle(
+                        target!!,
+                        duration * 1000F,
+                        heightRange,
+                        target!!.width + extraWidth,
+                        fillInnerCircle,
+                        withHeight,
+                        if (animateCircleY) circleYRange else null,
+                        circleStartColor.rgb,
+                        circleEndColor.rgb
+                    )
+                }
             }
         }
     }

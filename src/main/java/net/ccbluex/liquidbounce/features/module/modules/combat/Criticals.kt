@@ -29,7 +29,8 @@ object Criticals : Module("Criticals", Category.COMBAT) {
             "LowJump",
             "Grim",
             "BlocksMC",
-            "Visual"
+            "Visual",
+            "Blink"
         ),
         "Packet"
     )
@@ -37,12 +38,34 @@ object Criticals : Module("Criticals", Category.COMBAT) {
     val delay by int("Delay", 0, 0..500)
     private val hurtTime by int("HurtTime", 10, 0..10)
     private val customMotionY by float("Custom-Y", 0.2f, 0.01f..0.42f) { mode == "CustomMotion" }
+    
+    private val blinkDelay by intRange("BlinkDelay", 300..600, 0..1000) { mode == "Blink" }
+    private val blinkRange by float("BlinkRange", 4.0f, 0.0f..10.0f) { mode == "Blink" }
+    private var nextBlinkDelay = 0
+    private var isBlinkActive = false
+    private var enemyInBlinkRange = false
+    private val blinkPackets = mutableListOf<C03PacketPlayer>()
 
     val msTimer = MSTimer()
 
     override fun onEnable() {
-        if (mode == "NoGround")
-            mc.thePlayer.tryJump()
+        when (mode) {
+            "NoGround" -> mc.thePlayer.tryJump()
+            "Blink" -> {
+                isBlinkActive = false
+                blinkPackets.clear()
+                nextBlinkDelay = blinkDelay.random()
+                enemyInBlinkRange = false
+            }
+        }
+    }
+
+    override fun onDisable() {
+        if (mode == "Blink") {
+            isBlinkActive = false
+            blinkPackets.forEach { sendPackets(it) }
+            blinkPackets.clear()
+        }
     }
 
     val onAttack = handler<AttackEvent> { event ->
@@ -69,8 +92,6 @@ object Criticals : Module("Criticals", Category.COMBAT) {
 
                 "grim" -> {
                     if (!thePlayer.onGround) {
-                        // If player is in air, go down a little bit
-                        // Small enough to bypass simulation checks
                         sendPackets(
                             C04PacketPlayerPosition(x, y - 0.000001, z, false)
                         )
@@ -111,9 +132,38 @@ object Criticals : Module("Criticals", Category.COMBAT) {
 
     val onPacket = handler<PacketEvent> { event ->
         val packet = event.packet
+        val thePlayer = mc.thePlayer ?: return@handler
 
-        if (packet is C03PacketPlayer && mode == "NoGround")
-            packet.onGround = false
+        when {
+            mode == "NoGround" && packet is C03PacketPlayer -> {
+                packet.onGround = false
+            }
+            mode == "Blink" -> {
+                if (!enemyInBlinkRange || thePlayer.onGround || thePlayer.isInLiquid || thePlayer.isInWeb) {
+                    isBlinkActive = false
+                    return@handler
+                }
+
+                if (packet is C03PacketPlayer) {
+                    if (msTimer.hasTimePassed(nextBlinkDelay.toLong())) {
+                        nextBlinkDelay = blinkDelay.random()
+                        blinkPackets.clear()
+                        isBlinkActive = false
+                        return@handler
+                    }
+
+                    when (packet) {
+                        is C03PacketPlayer.C04PacketPlayerPosition,
+                        is C03PacketPlayer.C06PacketPlayerPosLook,
+                        is C03PacketPlayer.C05PacketPlayerLook -> {
+                            event.cancelEvent()
+                            blinkPackets.add(packet)
+                            isBlinkActive = true
+                        }
+                    }
+                }
+            }
+        }
     }
 
     override val tag

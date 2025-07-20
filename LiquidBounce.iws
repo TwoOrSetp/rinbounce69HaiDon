@@ -8,6 +8,7 @@
       <change beforePath="$PROJECT_DIR$/LiquidBounce.iml" beforeDir="false" afterPath="$PROJECT_DIR$/LiquidBounce.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/LiquidBounce.ipr" beforeDir="false" afterPath="$PROJECT_DIR$/LiquidBounce.ipr" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/LiquidBounce.iws" beforeDir="false" afterPath="$PROJECT_DIR$/LiquidBounce.iws" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/ccbluex/liquidbounce/api/ClientSettings.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/ccbluex/liquidbounce/api/ClientSettings.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -82,18 +83,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "VuGiaBao1337"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;VuGiaBao1337&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/rattermc/rinbounce69",
-    "accountId": "307220dc-4d0b-4e37-801e-5829db7bcc28"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/rattermc/rinbounce69&quot;,
+    &quot;accountId&quot;: &quot;307220dc-4d0b-4e37-801e-5829db7bcc28&quot;
   }
-}]]></component>
+}</component>
   <component name="ModuleEditorState">
     <option name="LAST_EDITED_MODULE_NAME" />
     <option name="LAST_EDITED_TAB_NAME" />
@@ -117,10 +118,18 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Gradle.Build rinbounce69.executor": "Run",
-    "Gradle.rinbounce69 [runClient].executor": "Debug",
+    "Gradle.rinbounce69 [runClient].executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "main"
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "C:/Users/idle209/Documents/RatterMC/RinBounce",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "reference.settingsdialog.project.gradle",
+    "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
   <component name="RunManager" selected="Gradle.rinbounce69 [runClient]">
@@ -223,6 +232,14 @@
       <item itemvalue="Gradle.rinbounce69 [runClient]" />
     </list>
   </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-fbdcb00ec9e3-intellij.indexing.shared.core-IU-251.26927.53" />
+        <option value="bundled-js-predefined-d6986cc7102b-09060db00ec0-JavaScript-IU-251.26927.53" />
+      </set>
+    </attachedChunks>
+  </component>
   <component name="SvnConfiguration" maxAnnotateRevisions="500">
     <option name="USER" value="" />
     <option name="PASSWORD" value="" />
@@ -244,6 +261,8 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1752314794398</updated>
+      <workItem from="1752996650671" duration="357000" />
+      <workItem from="1752997154466" duration="1444000" />
     </task>
     <task id="LOCAL-00001" summary="update killaura hit detection">
       <option name="closed" value="true" />
@@ -263,6 +282,9 @@
     </task>
     <option name="localTasksCounter" value="3" />
     <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">

@@ -14,7 +14,7 @@ import net.ccbluex.liquidbounce.utils.inventory.SilentHotbar
 
 object AutoTool : Module("AutoTool", Category.PLAYER, subjective = true, gameDetecting = false) {
 
-    private val switchBack by boolean("SwitchBack", false)
+    private val switchBack by boolean("SwitchBack", true)
     private val onlySneaking by boolean("OnlySneaking", false)
 
     val onGameTick = handler<GameTickEvent> {

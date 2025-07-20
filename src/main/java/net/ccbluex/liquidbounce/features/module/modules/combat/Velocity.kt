@@ -117,9 +117,15 @@ object Velocity : Module("Velocity", Category.COMBAT) {
     private val grimReduceVertical by float("GrimReduceVertical", 0.62f, 0f..1f) { mode == "grimreduce" }
 
     // Intave options
-    private val intaveHReduce by float("IntaveHReduce", 0.3f, 0f..1f) { mode == "Intave" }
-    private val intaveTimes by int("IntaveAttacksToWork", 4, 1..10) { mode == "Intave" }
-    private var intaveCount = 0
+    private val intaveHReduce by float("Factor", 0.6f, 0.6f..1f) { mode == "Intave" }
+    private val intaveHurtTime by intRange("HurtTime", 5..7, 1..10) { mode == "Intave" }
+    private val intaveLastAttackTimeToReduce by int("LastAttackTimeToReduce", 2000, 1..10000) { mode == "Intave" }
+    private val intaveJumpChance by float("JumpChance", 50f, 0f..100f) { mode == "Intave" }
+    private val intaveRandomizeDelay by boolean("RandomizeDelay", false) { mode == "Intave" }
+    private val intaveDelayTicks by intRange("DelayTicks", 0..5, 0..10) { mode == "Intave" && intaveRandomizeDelay }
+    private var intaveIsFallDamage = false
+    private var intaveCurrentDelay = 0
+    private var intaveDelayCounter = 0
     private var intaveLastAttackTime = 0L
 
     private val pauseOnExplosion by boolean("PauseOnExplosion", true)
@@ -572,15 +578,15 @@ object Velocity : Module("Velocity", Category.COMBAT) {
                 
                 "intave" -> {
                     if (packet is S12PacketEntityVelocity && packet.entityID == thePlayer.entityId) {
-                        if (thePlayer.hurtTime > 0) {
-                            intaveCount++
-                            
-                            if (intaveCount % intaveTimes == 0 && System.currentTimeMillis() - intaveLastAttackTime <= 8000) {
-                                packet.motionX = (packet.motionX * intaveHReduce).toInt()
-                                packet.motionZ = (packet.motionZ * intaveHReduce).toInt()
-                                ClientUtils.displayChatMessage("[Intave] Reduced velocity after $intaveCount hits")
-                            }
-                            intaveLastAttackTime = System.currentTimeMillis()
+                        val velocityX = packet.motionX / 8000.0
+                        val velocityY = packet.motionY / 8000.0
+                        val velocityZ = packet.motionZ / 8000.0
+
+                        intaveIsFallDamage = velocityX == 0.0 && velocityZ == 0.0 && velocityY < 0
+
+                        if (thePlayer.hurtTime in intaveHurtTime && System.currentTimeMillis() - intaveLastAttackTime <= intaveLastAttackTimeToReduce) {
+                            packet.motionX = (packet.motionX * intaveHReduce).toInt()
+                            packet.motionZ = (packet.motionZ * intaveHReduce).toInt()
                         }
                     } else if (packet is S27PacketExplosion) {
                         event.cancelEvent() 
@@ -762,6 +768,28 @@ object Velocity : Module("Velocity", Category.COMBAT) {
             }
             hasReceivedVelocity = false
             return@handler
+        }
+        
+        if (mode == "intave") {
+            val shouldJump = Math.random() * 100 < intaveJumpChance && player.hurtTime > 5 && !intaveIsFallDamage
+            val canJump = player.onGround && mc.currentScreen !is net.minecraft.client.gui.inventory.GuiInventory
+            val shouldFinallyJump = shouldJump && canJump
+
+            if (intaveRandomizeDelay) {
+                intaveDelayCounter++
+
+                if (intaveDelayCounter >= intaveCurrentDelay) {
+                    if (shouldFinallyJump) {
+                        player.tryJump()
+                    }
+                    intaveDelayCounter = 0
+                    intaveCurrentDelay = intaveDelayTicks.random()
+                }
+            } else {
+                if (shouldFinallyJump) {
+                    player.tryJump()
+                }
+            }
         }
 
         when (jumpCooldownMode.lowercase()) {

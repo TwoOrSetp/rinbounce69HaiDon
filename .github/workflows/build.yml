@@ -44,13 +44,13 @@ jobs:
         id: prep
         run: |
           cd build/libs
-          JAR=$(find . -name "*.jar" | grep "liquidbounce" | head -n1)
+          JAR=$(find . -name "*.jar" | grep "rinbounce" | head -n1)
           if [ -z "$JAR" ]; then
             echo "No .jar file found! Build failed."
             exit 1
           fi
           MINECRAFT_VERSION="1.8.9"
-          ARTIFACT_NAME="liquidbounce-${{ env.LB_VERSION }}-mc$MINECRAFT_VERSION.jar"
+          ARTIFACT_NAME="rinbounce-${{ env.LB_VERSION }}-mc$MINECRAFT_VERSION.jar"
           mkdir -p ../../artifacts
           cp "$JAR" "../../artifacts/$ARTIFACT_NAME"
           echo "jar_name=$ARTIFACT_NAME" >> $GITHUB_OUTPUT
@@ -58,7 +58,7 @@ jobs:
       - name: Upload all artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: LiquidBounce-Artifacts
+          name: RinBounce-Artifacts
           path: artifacts
           retention-days: 1
 
@@ -88,7 +88,7 @@ jobs:
       - name: Download built artifacts
         uses: actions/download-artifact@v4
         with:
-          name: LiquidBounce-Artifacts
+          name: RinBounce-Artifacts
           path: ./artifacts
 
       - name: Check artifacts exist

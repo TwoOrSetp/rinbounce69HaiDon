@@ -46,14 +46,8 @@ class Arraylist(
 ) : Element("Arraylist", x, y, scale, side) {
 
     private val textColorMode by choices(
-        "Text-Mode", arrayOf("Custom", "Fade", "Random", "Rainbow", "Gradient", "Sakura", "RedPastel", "Skylit", "PurplePastel", "GreenPastel", "GrayPastel", "YellowPastel", "RinStyle"), "RinStyle"
+        "Text-Mode", arrayOf("Custom", "Fade", "Random", "Rainbow", "Gradient", "Sakura", "RedPastel", "Skylit", "PurplePastel", "GreenPastel", "GrayPastel", "YellowPastel"), "Custom"
     )
-    private val rinGradient = listOf(
-        floatArrayOf(0.565f, 0.933f, 0.565f, 1.0f), 
-        floatArrayOf(0.678f, 0.847f, 0.902f, 1.0f), 
-        floatArrayOf(1.0f, 1.0f, 1.0f, 1.0f)  
-    )
-
     private val sakuraGradient = listOf(
         floatArrayOf(1.0f, 0.65f, 0.85f, 1.0f), // vivid pink
         floatArrayOf(1.0f, 0.80f, 0.92f, 1.0f), // lighter pink
@@ -481,23 +475,6 @@ class Arraylist(
                                     textShadow
                                 )
                             }
-                        } else if (!markAsInactive && textColorMode == "RinStyle") {
-                            GradientFontShader.begin(
-                                true,
-                                gradientX,
-                                gradientY,
-                                rinGradient,
-                                gradientTextSpeed,
-                                gradientOffset
-                            ).use {
-                                font.drawString(
-                                    displayString,
-                                    xPos + 1 - if (rectMode == "Right") 3 else 0,
-                                    yPos + textY,
-                                    Color.WHITE.rgb,
-                                    textShadow
-                                )
-                            }
                         } else {
                             GradientFontShader.begin(
                                 !markAsInactive && textColorMode == "Gradient",
@@ -747,23 +724,6 @@ class Arraylist(
                                 gradientX,
                                 gradientY,
                                 yellowPastelGradient,
-                                gradientTextSpeed,
-                                gradientOffset
-                            ).use {
-                                font.drawString(
-                                    displayString,
-                                    xPos - 1,
-                                    yPos + textY,
-                                    Color.WHITE.rgb,
-                                    textShadow
-                                )
-                            }
-                        } else if (!markAsInactive && textColorMode == "RinStyle") {
-                            GradientFontShader.begin(
-                                true,
-                                gradientX,
-                                gradientY,
-                                rinGradient,
                                 gradientTextSpeed,
                                 gradientOffset
                             ).use {

@@ -307,7 +307,7 @@ class GuiMainMenu : AbstractScreen() {
 
         // ? cailonmaskidskidconcak VERSION TEXT (TOP LEFT)
         mc.fontRendererObj.drawStringWithShadow(
-            "b1.1.7", 10f, 10f, 0xFFFFFF
+            "b1.1.8", 10f, 10f, 0xFFFFFF
 
         )
 
@@ -354,7 +354,7 @@ class GuiMainMenu : AbstractScreen() {
         GlStateManager.popMatrix()
 
         // ? cailonmaskidskidconcak CREDIT TEXT (BOTTOM RIGHT)
-        val creditText = "credit; [CCBluX, RatterMC]"
+        val creditText = "credit; [CCBlueX, RatterMC]"
         mc.fontRendererObj.drawStringWithShadow(
             creditText,
             width - mc.fontRendererObj.getStringWidth(creditText) - 10f,

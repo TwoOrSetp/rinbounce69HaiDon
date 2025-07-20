@@ -17,7 +17,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.hypi
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.intave.*
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.matrix.MatrixHop
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.matrix.MatrixSlowHop
-import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.matrix.OldMatrixHop
+import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.matrix.MatrixNew
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.ncp.*
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.other.*
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.spartan.SpartanYPort
@@ -72,7 +72,7 @@ object Speed : Module("Speed", Category.MOVEMENT) {
         VulcanGround288,
 
         // Matrix
-        OldMatrixHop,
+        MatrixNew,
         MatrixHop,
         MatrixSlowHop,
 
@@ -103,7 +103,7 @@ object Speed : Module("Speed", Category.MOVEMENT) {
     private val deprecatedMode = arrayOf(
         TeleportCubeCraft,
 
-        OldMatrixHop,
+        MatrixNew,
 
         VerusLowHop,
 

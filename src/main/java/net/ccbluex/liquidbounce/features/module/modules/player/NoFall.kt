@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.aac.A
 import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.aac.AAC3315
 import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.aac.LAAC
 import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.other.*
+import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.other.Grim19
 import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.other.Blink
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.collideBlock
 import net.ccbluex.liquidbounce.utils.rotation.AlwaysRotationSettings
@@ -45,6 +46,9 @@ object NoFall : Module("NoFall", Category.PLAYER) {
 
         // Vulcan
         VulcanFast288,
+
+        // Grim
+        Grim19,
 
         // Other Server
         Spartan,
