@@ -159,6 +159,7 @@ object ModuleManager : Listenable, Collection<Module> by MODULE_REGISTRY {
             Notifier,
             NoWeb,
             Nuker,
+            MemoryFix,
             PacketDebugger,
             Parkour,
             PerfectHorseJump,
@@ -218,8 +219,7 @@ object ModuleManager : Listenable, Collection<Module> by MODULE_REGISTRY {
             SnakeGame,
             AutoPlace,
             AutoHitselect,
-            CombatHelper,
-            CaptchaSlover()
+            CombatHelper
         )
 
         registerModules(modules = modules)

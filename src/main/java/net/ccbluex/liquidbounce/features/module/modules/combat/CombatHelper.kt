@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.extensions.*
+import net.ccbluex.liquidbounce.utils.rotation.RotationUtils
 import net.ccbluex.liquidbounce.config.*
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.item.ItemSword
@@ -53,7 +54,6 @@ object CombatHelper : Module("CombatHelper", Category.COMBAT) {
     val onGameTick = handler<GameTickEvent> {
         val thePlayer = mc.thePlayer ?: return@handler
 
-        // Get target from KillAura or find closest target
         target = if (!KillAura.handleEvents()) {
             getNearestTarget()
         } else {
@@ -112,29 +112,28 @@ object CombatHelper : Module("CombatHelper", Category.COMBAT) {
 
     private fun calculateStrafeYaw(target: EntityLivingBase): Float {
         val thePlayer = mc.thePlayer
-
-        if (!adaptiveStrafe || thePlayer.hurtTime != 0) 
+        if (!adaptiveStrafe || thePlayer.hurtTime != 0)
             return thePlayer.rotationYaw
 
-        val targetMotionX = if (lastTargetPos != null) target.posX - lastTargetPos!!.xCoord else 0.0
-        val targetMotionZ = if (lastTargetPos != null) target.posZ - lastTargetPos!!.zCoord else 0.0
-
+        val targetMotion = lastTargetPos?.let { Vec3(target.posX, target.posY, target.posZ).subtract(it) } ?: Vec3(0.0, 0.0, 0.0)
         lastTargetPos = Vec3(target.posX, target.posY, target.posZ)
 
-        val predictedTargetX = target.posX + targetMotionX * predictionTicks
-        val predictedTargetZ = target.posZ + targetMotionZ * predictionTicks
-
-        val relX = thePlayer.posX - predictedTargetX
-        val relZ = thePlayer.posZ - predictedTargetZ
-        val distanceToPredicted = sqrt(relX * relX + relZ * relZ)
+        val predictedTarget = Vec3(
+            target.posX + targetMotion.xCoord * predictionTicks,
+            target.posY + targetMotion.yCoord * predictionTicks,
+            target.posZ + targetMotion.zCoord * predictionTicks
+        )
+        val playerPos = Vec3(thePlayer.posX, thePlayer.posY, thePlayer.posZ)
+        val rel = playerPos.subtract(predictedTarget)
+        val distanceToPredicted = rel.lengthVector()
 
         val idealDistance = max(strafeDistance, 2.5f)
-        val angleToPredicted = atan2(relZ, relX)
+        val angleToPredicted = atan2(rel.zCoord, rel.xCoord)
         val angleOffset = if (distanceToPredicted > idealDistance) -45.0 else 45.0
         val targetAngle = angleToPredicted + Math.toRadians(angleOffset)
 
-        val strafeX = predictedTargetX + cos(targetAngle) * idealDistance
-        val strafeZ = predictedTargetZ + sin(targetAngle) * idealDistance
+        val strafeX = predictedTarget.xCoord + cos(targetAngle) * idealDistance
+        val strafeZ = predictedTarget.zCoord + sin(targetAngle) * idealDistance
 
         val targetYaw = Math.toDegrees(atan2(strafeZ - thePlayer.posZ, strafeX - thePlayer.posX)).toFloat()
         val deltaYaw = MathHelper.wrapAngleTo180_float(targetYaw - lastStrafeYaw.toFloat())
@@ -176,24 +175,16 @@ object CombatHelper : Module("CombatHelper", Category.COMBAT) {
 
     private fun getRotationToEntity(entity: EntityLivingBase): FloatArray {
         val thePlayer = mc.thePlayer
-        val x = entity.posX - thePlayer.posX
-        val z = entity.posZ - thePlayer.posZ
-        val y = entity.posY + entity.eyeHeight - (thePlayer.posY + thePlayer.eyeHeight)
-        val dist = sqrt(x * x + z * z)
-        
-        val yaw = (atan2(z, x) * 180f / Math.PI).toFloat() - 90f
-        val pitch = -(atan2(y, dist) * 180f / Math.PI).toFloat()
-        
-        return floatArrayOf(yaw, pitch)
+        val rotation = RotationUtils.toRotation(Vec3(entity.posX, entity.posY + entity.eyeHeight, entity.posZ), false, thePlayer)
+        return floatArrayOf(rotation.yaw, rotation.pitch)
     }
 
     private fun fixMovement(input: MovementInput, yaw: Float) {
         val forward = input.moveForward
         val strafe = input.moveStrafe
-        val sin = sin(Math.toRadians(yaw.toDouble())).toFloat()
-        val cos = cos(Math.toRadians(yaw.toDouble())).toFloat()
-        
-        input.moveForward = forward * cos - strafe * sin
-        input.moveStrafe = forward * sin + strafe * cos
+        val sinYaw = sin(Math.toRadians(yaw.toDouble())).toFloat()
+        val cosYaw = cos(Math.toRadians(yaw.toDouble())).toFloat()
+        input.moveForward = forward * cosYaw - strafe * sinYaw
+        input.moveStrafe = forward * sinYaw + strafe * cosYaw
     }
 }

@@ -85,12 +85,6 @@ object Scaffold : Module("Scaffold", Category.WORLD, Keyboard.KEY_I) {
     private val autoCenter by boolean("AutoCenter", true) { scaffoldMode == "GodBridge" }
     private val adaptiveSpeed by boolean("AdaptiveSpeed", true) { scaffoldMode == "GodBridge" }
     private val smartPitch by boolean("SmartPitch", true) { scaffoldMode == "GodBridge" }
-    // GodBridge Bypass Mode
-    private val godBridgeBypassMode by choices("GodBridgeBypassMode", arrayOf("Jump", "Sneak", "None", "Random"), "Jump") { scaffoldMode == "GodBridge" }
-    private val godBridgeBypassDistance by int("GodBridgeBypassDistance", 4, 1..10) { scaffoldMode == "GodBridge" && godBridgeBypassMode != "None" }
-    private var blocksPlacedUntilBypass = 0
-    private var godBridgeRandomBypassIsJump = true
-    private var blocksToBypass = 4
     
     // HMCBlinkFly
     private val hmcBlinkFlyEnabled by boolean("HMCBlinkFly", false)
@@ -324,8 +318,12 @@ object Scaffold : Module("Scaffold", Category.WORLD, Keyboard.KEY_I) {
     private var extraClick = ExtraClickInfo(TimeUtils.randomClickDelay(extraClickCPS.first, extraClickCPS.last), 0L, 0)
 
     // GodBridge
+    private var blocksPlacedUntilJump = 0
+
     private val isManualJumpOptionActive
-        get() = scaffoldMode == "GodBridge" && !jumpAutomatically && godBridgeBypassMode == "Jump"
+        get() = scaffoldMode == "GodBridge" && !jumpAutomatically
+
+    private var blocksToJump = blocksToJumpRange.random()
 
     private val isGodBridgeEnabled
         get() = scaffoldMode == "GodBridge" || scaffoldMode == "Normal" && options.rotationMode == "GodBridge"
@@ -453,9 +451,6 @@ object Scaffold : Module("Scaffold", Category.WORLD, Keyboard.KEY_I) {
 
         launchY = player.posY.roundToInt()
         blocksUntilAxisChange = 0
-        blocksPlacedUntilBypass = 0
-        blocksToBypass = godBridgeBypassDistance
-        godBridgeRandomBypassIsJump = true
     }
 
     // Events
@@ -843,38 +838,17 @@ object Scaffold : Module("Scaffold", Category.WORLD, Keyboard.KEY_I) {
         }
 
         val simPlayer = SimulatedPlayer.fromClientPlayer(RotationUtils.modifiedInput)
+
         simPlayer.rotationYaw = currRotation.yaw
+
         simPlayer.tick()
 
-        if (scaffoldMode == "GodBridge") {
-            when (godBridgeBypassMode) {
-                "Jump" -> {
-                    if ((!simPlayer.onGround && !isManualJumpOptionActive) || blocksPlacedUntilBypass >= godBridgeBypassDistance) {
-                        event.originalInput.jump = true
-                        blocksPlacedUntilBypass = 0
-                        blocksToBypass = godBridgeBypassDistance
-                    }
-                }
-                "Sneak" -> {
-                    if (blocksPlacedUntilBypass >= godBridgeBypassDistance) {
-                        event.originalInput.sneak = true
-                        blocksPlacedUntilBypass = 0
-                        blocksToBypass = godBridgeBypassDistance
-                    }
-                }
-                "Random" -> {
-                    if (blocksPlacedUntilBypass >= godBridgeBypassDistance) {
-                        godBridgeRandomBypassIsJump = RandomUtils.nextBoolean()
-                        if (godBridgeRandomBypassIsJump) {
-                            event.originalInput.jump = true
-                        } else {
-                            event.originalInput.sneak = true
-                        }
-                        blocksPlacedUntilBypass = 0
-                        blocksToBypass = godBridgeBypassDistance
-                    }
-                }
-            }
+        if (!simPlayer.onGround && !isManualJumpOptionActive || blocksPlacedUntilJump > blocksToJump) {
+            event.originalInput.jump = true
+
+            blocksPlacedUntilJump = 0
+
+            blocksToJump = blocksToJumpRange.random()
         }
     }
 
@@ -1091,9 +1065,6 @@ object Scaffold : Module("Scaffold", Category.WORLD, Keyboard.KEY_I) {
         
         mc.gameSettings.keyBindRight.pressed = false
         mc.gameSettings.keyBindLeft.pressed = false
-    blocksPlacedUntilBypass = 0
-    blocksToBypass = godBridgeBypassDistance
-    godBridgeRandomBypassIsJump = true
     }
 
     // Entity movement event
@@ -1413,9 +1384,7 @@ object Scaffold : Module("Scaffold", Category.WORLD, Keyboard.KEY_I) {
             if (swing) thePlayer.swingItem()
             else sendPacket(C0APacketAnimation())
 
-            if (scaffoldMode == "GodBridge" && godBridgeBypassMode != "None") {
-                blocksPlacedUntilBypass++
-            }
+            if (isManualJumpOptionActive) blocksPlacedUntilJump++
 
             updatePlacedBlocksForTelly()
 

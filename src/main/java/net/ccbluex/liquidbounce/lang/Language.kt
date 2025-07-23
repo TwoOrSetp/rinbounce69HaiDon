@@ -45,7 +45,7 @@ object LanguageManager : MinecraftInstance {
     fun loadLanguages() {
         for (language in knownLanguages) {
             runCatching {
-                languageMap[language] = javaClass.getResourceAsStream("/assets/minecraft/liquidbounce/lang/$language.json")!!
+                languageMap[language] = javaClass.getResourceAsStream("/assets/minecraft/rinbounce/lang/$language.json")!!
                     .bufferedReader().use { it.decodeJson() }
             }.onSuccess {
                 LOGGER.info("Loaded language $language")
